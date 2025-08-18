@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Install Dependencies",
+            "type": "shell",
+            "command": "pip install -r requirements.txt",
+            "isBackground": false,
+            "detail": "[Neuro] Installs dependencies using pip"
+        },
+        {
+            "label": "Run Python code",
+            "type": "shell",
+            "command": "python -m src",
+            "isBackground": false,
+            "detail": "[Neuro] Runs the Python module as a whole."
+        },
+        {
+            "label": "Run Current File",
+            "type": "shell",
+            "command": "python ${file}",
+            "detail": "[Neuro] Runs the current Python file."
+        }
+    ]
+}

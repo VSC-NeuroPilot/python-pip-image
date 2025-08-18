@@ -1,0 +1,27 @@
+  {
+    "name": "Python container",
+    "build": {
+      "dockerfile": "Dockerfile",
+      "context": "..",
+      "args": {
+        "GITHUB_REPOSITORY": "${localEnv:GITHUB_REPOSITORY}",
+        "APP_DIR": "/workspace"
+      }
+    },
+    "runArgs": ["--init", "--add-host=host.docker.internal:host-gateway"],
+    "remoteUser": "python",
+    "workspaceFolder": "/workspace",
+    "postCreateCommand": "git init",
+    "postStartCommand": "pip install -r requirements.txt",
+    "shutdownAction": "stopContainer",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-python.debugpy",
+          "ms-python.python",
+          "Pasu4.neuropilot"
+        ]
+      }
+    }
+  }
+  
