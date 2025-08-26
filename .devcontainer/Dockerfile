@@ -9,25 +9,38 @@ LABEL org.opencontainers.image.source="https://github.com/${GITHUB_REPOSITORY}"
 LABEL org.opencontainers.image.description="A Python container to use with NeuroPilot."
 LABEL org.opencontainers.image.licenses="MIT"
 
-# Install OS packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates curl build-essential git python3 \
-  && rm -rf /var/lib/apt/lists/*
+# Create a dedicated 'python' user & group early so --chown=python:python works
+# Use system user so it has a predictable uid/gid
+RUN groupadd --system python \
+ && useradd --system --create-home --gid python --shell /bin/bash python
+
+# Install OS packages (do not install python3 — base image already has Python)
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      ca-certificates curl build-essential git \
+ && rm -rf /var/lib/apt/lists/*
 
 # set absolute workdir
 RUN mkdir -p ${APP_DIR}
 WORKDIR ${APP_DIR}
 
-# Copy package manifests first (cache-friendly)
+# Copy only requirements first (cache-friendly)
 COPY requirements.txt ${APP_DIR}/
 
-# Copy rest of the repo (this includes .vscode if you want it in the image)
+# Install Python deps as root (cached when requirements.txt unchanged)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the repo into the image and set ownership to the python user.
+# NOTE: --chown requires BuildKit. If your environment doesn't support it, remove --chown and
+# rely on the chown step below (which is tolerant).
 COPY --chown=python:python . ${APP_DIR}
 
-RUN pip install -r requirements.txt
+# Ensure permissions (tolerant). This avoids build failure on filesystems that disallow chown.
+RUN if [ -d "${APP_DIR}" ]; then chown -R python:python "${APP_DIR}" || true; fi
 
-# Ensure permissions (tolerant)
-RUN if [ -d "${APP_DIR}" ]; then chown -R node:node "${APP_DIR}" || true; fi
-
+# Switch to the non-root 'python' user
 USER python
 ENV HOME=/home/python
+
+# Default command
+CMD ["bash"]
