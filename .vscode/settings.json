@@ -1,8 +1,0 @@
-{
-    "neuropilot.websocketUrl": "ws://host.docker.internal:8000",
-    "neuropilot.permission.editActiveDocument": "Autopilot",
-    "neuropilot.permission.create": "Copilot",
-    "neuropilot.permission.rename": "Copilot",
-    "neuropilot.permission.delete": "Copilot",
-    "neuropilot.permission.runTasks": "Copilot"
-}
