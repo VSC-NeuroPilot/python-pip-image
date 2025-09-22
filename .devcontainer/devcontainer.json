@@ -19,7 +19,7 @@
         "extensions": [
           "ms-python.debugpy",
           "ms-python.python",
-          "Pasu4.neuropilot"
+          "vsc-neuropilot.neuropilot-base"
         ]
       }
     }
